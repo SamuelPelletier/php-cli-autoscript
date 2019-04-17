@@ -1,0 +1,32 @@
+#!/usr/bin/env php
+<?php
+
+require "autoload_db.php";
+
+use Symfony\Component\Finder\Finder;
+
+
+class Program
+{
+
+    public static function main()
+    {
+        $finder = new Finder();
+        $finder->files()->in(__DIR__ . '/src/scripts')->name('*.php')->notName('Example.php');
+        foreach ($finder as $file) {
+            $className = ("App\scripts\\" . substr($file->getFilename(), 0, -4));
+            echo $file->getFilename() . "\n";
+            $object = new $className();
+            $object->setUp();
+            $object->execute();
+            $object->cleanUp();
+            echo "\n";
+        }
+    }
+}
+
+if (isset($argv[1]) && $argv[1] == "phpunit") {
+    echo shell_exec('sh phpunit.sh');
+} else {
+    Program::main();
+}
