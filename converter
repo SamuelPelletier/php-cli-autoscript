@@ -4,12 +4,11 @@
 require "autoload_db.php";
 
 use Symfony\Component\Finder\Finder;
-
+use App\Helper\ConsoleColors;
 
 class Program
 {
-
-    public static function main()
+    public static function main() : void
     {
         $finder = new Finder();
         $finder->files()->in(__DIR__ . '/src/scripts')->name('*.php')->notName('Example.php');
@@ -25,8 +24,21 @@ class Program
     }
 }
 
-if (isset($argv[1]) && $argv[1] == "phpunit") {
-    echo shell_exec('sh phpunit.sh');
+if (isset($argv[1])) {
+    switch($argv[1]) {
+        case "phpunit":
+            ob_start();
+            shell_exec('composer install');
+            $output = ob_get_clean();
+            echo $output;
+            break;
+        case "print":
+            ConsoleColors::write("voiture", ConsoleColors::FOREGROUND["YELLOW"]);
+            break;
+        default:
+            echo "\"".$argv[1]."\" is not a valid argument";
+            break;        
+    }
 } else {
     Program::main();
 }
